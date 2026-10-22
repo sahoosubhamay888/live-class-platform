@@ -10,16 +10,33 @@ const app = express();
 // Trust reverse proxy on Render/Railway
 app.set("trust proxy", 1);
 
-const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : "http://localhost:5173";
-
-// CORS config: allow frontend origin and credentials (cookies/headers)
+// Flexible and secure CORS configuration
 const corsOption = {
-  origin: [clientUrl, "http://localhost:5173"],
+  origin: (origin, callback) => {
+    // 1. Allow non-browser requests (Postman, health checks, curl)
+    if (!origin) return callback(null, true);
+    const clientUrl = process.env.CLIENT_URL
+      ? process.env.CLIENT_URL.trim().replace(/\/$/, "")
+      : "";
+    // 2. Allow your Vercel URL, any *.vercel.app preview URL, and localhost
+    if (
+      origin === clientUrl ||
+      origin.endsWith(".vercel.app") ||
+      origin.includes("localhost")
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS origin not allowed: ${origin}`));
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
 };
 
 // Middlewares
 app.use(cors(corsOption));
+// Explicitly handle browser preflight OPTIONS requests
+app.options("*", cors(corsOption));
 app.use(express.json()); // Parse incoming JSON request body (req.body)
 app.use(cookieParser()) //parse the incoming cookie
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded form data
