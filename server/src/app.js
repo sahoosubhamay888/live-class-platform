@@ -35,8 +35,6 @@ const corsOption = {
 
 // Middlewares
 app.use(cors(corsOption));
-// Explicitly handle browser preflight OPTIONS requests
-app.options("*", cors(corsOption));
 app.use(express.json()); // Parse incoming JSON request body (req.body)
 app.use(cookieParser()) //parse the incoming cookie
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded form data
