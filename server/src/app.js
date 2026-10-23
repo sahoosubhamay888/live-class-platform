@@ -38,6 +38,14 @@ app.use(cors(corsOption));
 app.use(express.json()); // Parse incoming JSON request body (req.body)
 app.use(cookieParser()) //parse the incoming cookie
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded form data
+// Root route 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "EduSync API is running smoothly",
+    status: "online",
+  });
+});
 app.use("/api/auth", authRouter);
 app.use("/api/session/", sessionRouter);
 app.use(errorHandler); //execute manual error handler
