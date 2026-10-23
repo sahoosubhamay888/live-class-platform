@@ -8,6 +8,16 @@ let isDestroying = false;
 let activeRoomId = null;
 let joinPromise = null;
 
+// Helper to detect mobile devices where Zego mobile engine behaves differently
+const isMobileDevice = () => {
+    if (typeof window === 'undefined') return false;
+    return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        window.innerWidth <= 768 ||
+        (navigator.maxTouchPoints > 1 && window.innerWidth <= 1024)
+    );
+};
+
 // Generate a kit token securely from the backend
 export const generateKitToken = async (roomId, userId, userName) => {
     const appId = Number(ZEGO_CONFIG.APP_ID);
@@ -120,10 +130,39 @@ export const joinRoom = async (roomId, userId, userName, container, onJoinCallba
                 },
                 onLeaveRoom: () => {
                     userHasJoined = false;
-                    zegoInstance = null;
-                    activeRoomId = null;
+                    const wasDestroying = isDestroying;
+
                     if (typeof onLeaveCallback === 'function') {
-                        onLeaveCallback();
+                        try {
+                            onLeaveCallback();
+                        } catch (e) {
+                            console.error('Error in onLeaveCallback:', e);
+                        }
+                    }
+
+                    // On Mobile, Zego does not reset back to the Pre-Join Preview screen automatically.
+                    // If the user tapped the in-call leave button while remaining on the session page,
+                    // clean up the old mobile instance and re-initialize so the Pre-Join Preview screen displays.
+                    if (!wasDestroying && isMobileDevice() && container && document.body.contains(container)) {
+                        try {
+                            if (zp && typeof zp.destroy === 'function') {
+                                zp.destroy();
+                            }
+                        } catch (e) {
+                            console.warn('Error destroying mobile Zego instance on leave:', e);
+                        }
+                        container.innerHTML = '';
+                        zegoInstance = null;
+                        activeRoomId = null;
+
+                        setTimeout(() => {
+                            if (container && document.body.contains(container)) {
+                                joinRoom(roomId, userId, userName, container, onJoinCallback, onLeaveCallback);
+                            }
+                        }, 100);
+                    } else {
+                        zegoInstance = null;
+                        activeRoomId = null;
                     }
                 },
                 onError: (error) => {
