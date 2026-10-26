@@ -18,7 +18,8 @@ const Auth = () => {
         confirmPassword: ''
     });
     const [localError, setLocalError] = useState('');
-    const { login, register, loading, error, isAuthenticated, setError } = useAuth();
+    const [submitting, setSubmitting] = useState(false);
+    const { login, register, error, isAuthenticated, setError } = useAuth();
 
     // Redirect already authenticated users
     useEffect(() => {
@@ -60,10 +61,14 @@ const Auth = () => {
                 setLocalError('Please fill in all fields');
                 return;
             }
-
-            const result = await login(email, password);
-            if (result.success) {
-                navigate(redirectPath, { replace: true });
+            setSubmitting(true);
+            try {
+                const result = await login(email, password);
+                if (result.success) {
+                    navigate(redirectPath, { replace: true });
+                }
+            } finally {
+                setSubmitting(false);
             }
         } else {
             const name = formData.name.trim();
@@ -84,9 +89,15 @@ const Auth = () => {
                 return;
             }
 
-            const result = await register(name, email, password);
-            if (result.success) {
-                navigate(redirectPath, { replace: true });
+            setSubmitting(true);
+            try {
+                const result = await register(name, email, password);
+                if (result.success) {
+                    navigate(redirectPath, { replace: true });
+                }
+            }
+            finally {
+                setSubmitting(false);
             }
         }
     };
@@ -97,7 +108,7 @@ const Auth = () => {
             formData={formData}
             onChange={handleChange}
             onSubmit={handleSubmit}
-            loading={loading}
+            loading={submitting}
             error={error}
             localError={localError}
         />
