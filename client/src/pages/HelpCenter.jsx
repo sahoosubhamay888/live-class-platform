@@ -68,6 +68,21 @@ const HelpCenter = () => {
             question: 'Can I rejoin a session if I accidentally close the tab?',
             answer: 'Yes! Hosts and participants can rejoin any active session at any time from their Dashboard under "Your Sessions" by clicking the "Rejoin" button.'
         },
+        {
+            category: 'Rooms & Access',
+            question: 'Can hosts remove disruptive participants during a session?',
+            answer: 'Yes. Session hosts can view the live participants panel, click the remove button next to any participant\'s name, and confirm via the top safety dialog. The attendee is immediately disconnected from the video room and redirected to their dashboard with a notification.'
+        },
+        {
+            category: 'Rooms & Access',
+            question: 'What happens if I get removed from a session? Can I rejoin?',
+            answer: 'If a host removes you from a meeting, your audio/video stream will end and you will receive a notification before returning to your dashboard. EduSync does not permanently blacklist or lock your account; you may re-enter using the Room ID if the removal was accidental or if the host invites you back.'
+        },
+        {
+            category: 'Audio & Video Issues',
+            question: 'Can I test my camera and microphone before joining a live call?',
+            answer: 'Yes! When entering any session, EduSync opens a Pre-Join Lobby. You can check your camera preview, toggle your microphone and video streams on or off, and only connect to the live room when you are ready.'
+        },
     ];
 
     const toggleFaq = (index) => {

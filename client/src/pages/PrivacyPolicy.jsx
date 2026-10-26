@@ -46,7 +46,7 @@ const PrivacyPolicy = () => {
                         </h2>
                         <ul className="list-disc list-inside space-y-2 text-sm sm:text-base text-slate-400 pl-2">
                             <li><strong className="text-slate-200">Account Credentials:</strong> When you register, we store your full name, email address, and a securely salted & hashed password.</li>
-                            <li><strong className="text-slate-200">Session Metadata:</strong> Generated Room IDs, host identifiers, meeting start/end timestamps, and participant attendance lists for session history display.</li>
+                            <li><strong className="text-slate-200">Session Metadata:</strong> Generated Room IDs, host identifiers, meeting start/end timestamps, and participant attendance rosters (including room-level moderation statuses) required for session administration and history display.</li>
                             <li><strong className="text-slate-200">Technical Logs:</strong> IP address and browser type for security monitoring and fraud prevention.</li>
                         </ul>
                     </section>
@@ -60,8 +60,11 @@ const PrivacyPolicy = () => {
                         <p className="text-sm sm:text-base text-slate-300 mb-3">
                             <strong className="text-white">We do NOT record or store your live audio or video streams.</strong>
                         </p>
+                        <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mb-3">
+                            Video and audio streams are rendered in real time utilizing WebRTC media protocols. Microphone and webcam access are used exclusively during active video sessions and only when you explicitly grant browser permission. Once a session concludes or you leave the call, media feeds are immediately terminated.
+                        </p>
                         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                            Video and audio streams are rendered in real time utilizing WebRTC media protocols. Microphone and webcam access are used exclusively during active video sessions and only when you explicitly grant browser permission. Once a session concludes, media feeds are immediately terminated.
+                            <strong className="text-slate-300">Pre-Join Lobby Privacy:</strong> Camera and microphone previews rendered in the Pre-Join Lobby remain strictly local to your browser and are not transmitted to other attendees or servers until you choose to click "Join Call".
                         </p>
                     </section>
 
@@ -100,7 +103,7 @@ const PrivacyPolicy = () => {
                         <p className="text-sm sm:text-base text-slate-400">
                             If you have questions regarding this Privacy Policy or wish to request the deletion of your account and related metadata, please reach out to us at{' '}
                             <a href={APP_CONFIG.SOCIAL_LINKS.EMAIL} className="text-indigo-400 underline underline-offset-4 hover:text-indigo-300">
-                                support@liveclasses.com
+                                support@edusync.com
                             </a>.
                         </p>
                     </section>

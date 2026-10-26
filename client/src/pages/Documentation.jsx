@@ -82,12 +82,14 @@ const Documentation = () => {
 
                     <div className="space-y-4 text-sm sm:text-base text-slate-300 leading-relaxed">
                         <p>
-                            As a host, you have full control over the session lifecycle:
+                            As a host, you have full control over the session lifecycle and room moderation:
                         </p>
                         <ul className="list-disc list-inside space-y-2 text-slate-400 pl-2">
                             <li><strong className="text-slate-200">Starting a Session:</strong> Click "Host a Session" from the Dashboard or Quick Links. A unique 9-character Room ID will be generated.</li>
+                            <li><strong className="text-slate-200">Pre-Join Device Preview:</strong> Test and verify your camera and microphone in the pre-join lobby before publishing your live stream.</li>
                             <li><strong className="text-slate-200">Sharing Access:</strong> Use the "Copy Room ID" or "Copy Link" buttons to distribute the invite link to your attendees.</li>
-                            <li><strong className="text-slate-200">In-Call Controls:</strong> You can toggle full-screen view and monitor the live participants counter in real time.</li>
+                            <li><strong className="text-slate-200">Participant Moderation:</strong> Inspect connected attendees in real time via the Participants sidebar. Hosts have administrative authority to eject disruptive participants instantly with a safety confirmation prompt.</li>
+                            <li><strong className="text-slate-200">In-Call Controls:</strong> Toggle full-screen view, mute/unmute your hardware, and monitor the live participant roster.</li>
                             <li><strong className="text-slate-200">Ending the Session:</strong> When your class concludes, click <span className="text-rose-400 font-medium">"End Session"</span>. This marks the room as concluded and disconnects all active streams.</li>
                         </ul>
                     </div>
@@ -109,8 +111,9 @@ const Documentation = () => {
                         <ol className="list-decimal list-inside space-y-2 text-slate-400 pl-2">
                             <li>Click on <Link to={ROUTES.JOIN} className="text-indigo-400 underline underline-offset-4 hover:text-indigo-300">Join Session</Link> from the header, dashboard, or footer.</li>
                             <li>Enter the Room ID provided by your host (or click a shared link with the Room ID prefilled).</li>
-                            <li>Allow your browser camera and microphone permissions when prompted.</li>
-                            <li>You will immediately join the video grid and can see the host and fellow attendees.</li>
+                            <li>Grant your browser camera and microphone permissions when prompted.</li>
+                            <li>Configure your audio and video settings in the <strong className="text-slate-200">Pre-Join Lobby</strong> and click "Join Call" when you are ready.</li>
+                            <li>Participate actively in the live session, communicate via audio/video, and respect classroom moderation guidelines.</li>
                         </ol>
                     </div>
                 </section>

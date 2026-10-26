@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
     JOIN: '/session/join',
     END: '/session/end',
     LEAVE: '/session/leave',
+    KICK: '/session/kick',
     GET: '/session', // Base path, append roomId
     LIST: '/session/list',
   },

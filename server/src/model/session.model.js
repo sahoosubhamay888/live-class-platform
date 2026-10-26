@@ -39,6 +39,10 @@ const sessionSchema = new mongoose.Schema({
             default: true
         }
     }],
+    kickedUsers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     startedAt: {
         type: Date,
         default: Date.now

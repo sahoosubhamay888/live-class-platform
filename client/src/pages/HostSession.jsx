@@ -18,7 +18,7 @@ const HostSession = () => {
     const [loading, setLoading] = useState(true);
     const [copiedRoomId, setCopiedRoomId] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
-    const { currentSession, getSession, leaveSession, clearSession } = useSession();
+    const { currentSession, getSession, leaveSession, clearSession, kickParticipant } = useSession();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -211,6 +211,30 @@ const HostSession = () => {
         }
     };
 
+    const handleKickParticipant = async (targetUserId, targetUserName) => {
+        try {
+            const res = await kickParticipant(roomId, targetUserId);
+            if (res.success) {
+                toast.success(`${targetUserName} has been removed from the session`);
+                setSessionInfo((prev) => {
+                    if (!prev) return prev;
+                    const filtered = prev.participants.filter(
+                        (p) => (p.userId || p._id).toString() !== targetUserId.toString()
+                    );
+                    return {
+                        ...prev,
+                        participantCount: filtered.length,
+                        participants: filtered,
+                    };
+                });
+            } else {
+                toast.error(res.error || "Failed to remove participant");
+            }
+        } catch (err) {
+            toast.error("Failed to remove participant. Please try again.");
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#0B1120]">
@@ -288,6 +312,8 @@ const HostSession = () => {
                         <ParticipantsList
                             participants={sessionInfo?.participants || []}
                             hostName={sessionInfo?.hostName}
+                            isHost={true}
+                            onKickParticipant={handleKickParticipant}
                         />
                     </div>
                 </div>

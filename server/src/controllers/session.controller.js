@@ -151,6 +151,13 @@ export const joinSession = async (req, res, next) => {
             });
         }
 
+        // If user was previously removed, reset their kicked status so they can rejoin
+        if (session.kickedUsers && session.kickedUsers.length > 0) {
+            session.kickedUsers = session.kickedUsers.filter(
+                (id) => id.toString() !== user._id.toString()
+            );
+        }
+
         // Check if user already exists in participants
         const existingParticipantIndex = session.participants.findIndex(
             (p) => p.userId.toString() === user._id.toString(),
@@ -206,9 +213,15 @@ export const getSession = async (req, res, next) => {
             });
         }
 
-        // Check if user is or was a participant
+        // Check if user was kicked by the host
+        const isKicked = Boolean(
+            session.kickedUsers &&
+            session.kickedUsers.some((id) => id.toString() === userId.toString())
+        );
+
+        // Check if user is or was an active participant
         const isParticipant = session.participants.some(
-            (p) => p.userId.toString() === userId.toString(),
+            (p) => p.userId.toString() === userId.toString() && p.isActive !== false,
         );
 
         const activeParticipants = session.participants.filter(
@@ -226,6 +239,7 @@ export const getSession = async (req, res, next) => {
                     participantCount: activeParticipants.length,
                     isHost: session.host.toString() === userId.toString(),
                     isParticipant,
+                    isKicked,
                     participants: activeParticipants,
                 },
             },
@@ -327,3 +341,78 @@ export const leaveSession = async (req, res, next) => {
         next(error);
     }
 }
+
+export const kickParticipant = async (req, res, next) => {
+    try {
+        const { roomId, targetUserId } = req.body;
+        const hostUserId = req.user._id;
+
+        if (!roomId || !targetUserId) {
+            return res.status(400).json({
+                success: false,
+                error: "RoomId and targetUserId are required",
+            });
+        }
+
+        const session = await sessionsModel.findOne({ roomId });
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                error: "Session not found",
+            });
+        }
+
+        // Verify the requester is the host
+        if (session.host.toString() !== hostUserId.toString()) {
+            return res.status(403).json({
+                success: false,
+                error: "Only the host can remove participants",
+            });
+        }
+
+        // Host cannot remove themselves
+        if (targetUserId.toString() === hostUserId.toString()) {
+            return res.status(400).json({
+                success: false,
+                error: "Host cannot remove themselves from the session",
+            });
+        }
+
+        // Add to kickedUsers array if not already present
+        if (!session.kickedUsers) {
+            session.kickedUsers = [];
+        }
+        if (!session.kickedUsers.some((id) => id.toString() === targetUserId.toString())) {
+            session.kickedUsers.push(targetUserId);
+        }
+
+        // Mark target participant as inactive in session
+        const participant = session.participants.find(
+            (p) => p.userId.toString() === targetUserId.toString(),
+        );
+        if (participant) {
+            participant.isActive = false;
+        }
+
+        await session.save();
+
+        const activeParticipants = session.participants.filter(
+            (p) => p.isActive !== false,
+        );
+
+        return res.json({
+            success: true,
+            message: "Participant removed successfully",
+            data: {
+                session: {
+                    id: session._id,
+                    roomId: session.roomId,
+                    participantCount: activeParticipants.length,
+                    participants: activeParticipants,
+                },
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};

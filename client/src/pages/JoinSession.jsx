@@ -134,7 +134,7 @@ const JoinSession = () => {
         }
     };
 
-    // Poll session info & detect if host ends the meeting
+    // Poll session info & detect if host ends the meeting or removes this participant
     useEffect(() => {
         if (!sessionJoined || !roomId) return;
 
@@ -146,9 +146,17 @@ const JoinSession = () => {
                     handleLeave();
                     return;
                 }
+                if (res.session.isKicked) {
+                    toast.error("You have been removed from this session by the host.", {
+                        duration: 6000,
+                        id: "kicked-out-toast",
+                    });
+                    handleLeave();
+                    return;
+                }
                 setSessionInfo(res.session);
             }
-        }, 5000);
+        }, 3000);
 
         return () => clearInterval(interval);
     }, [sessionJoined, roomId, getSession, handleLeave]);

@@ -42,17 +42,23 @@ const TermsOfService = () => {
                     <section className="bg-slate-950/60 border border-white/[0.06] rounded-2xl p-6">
                         <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 flex items-center gap-2.5">
                             <FaExclamationTriangle className="text-amber-400 w-5 h-5" />
-                            2. Code of Conduct & Acceptable Use
+                            2. Code of Conduct & Host Moderation
                         </h2>
                         <p className="text-sm sm:text-base text-slate-300 mb-3">
                             You agree to use {APP_CONFIG.APP_NAME} in a manner consistent with applicable laws and educational integrity. You explicitly agree NOT to:
                         </p>
-                        <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-400 pl-2">
+                        <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-400 pl-2 mb-4">
                             <li>Engage in harassment, verbal abuse, hate speech, or cyberbullying during live video calls.</li>
                             <li>Broadcast, display, or upload obscene, pornographic, or unlawful multimedia content.</li>
                             <li>Record or redistribute audio/video feeds of hosts or attendees without explicit written consent.</li>
                             <li>Attempt to breach or reverse engineer the authentication mechanisms, room security, or streaming tokens.</li>
                         </ul>
+                        <div className="pt-3 border-t border-white/[0.08]">
+                            <h3 className="text-xs sm:text-sm font-semibold text-amber-300/90 mb-1.5 uppercase tracking-wider">Host Moderation Authority</h3>
+                            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                                Session hosts possess direct moderation authority over their active meetings. A host may immediately eject any participant who violates room rules or disrupts the class. Session ejection disconnects the participant's active stream but does not automatically delete their platform account; however, persistent or egregious violations may trigger platform-wide account suspension under Section 6.
+                            </p>
+                        </div>
                     </section>
 
                     {/* Section 3 */}

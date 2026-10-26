@@ -105,6 +105,26 @@ export const SessionProvider = ({ children }) => {
         }
     }, [])
 
+    // Kick / remove participant (Host only)
+    const kickParticipant = useCallback(async (roomId, targetUserId) => {
+        try {
+            setError(null);
+            const response = await api.post(API_ENDPOINTS.SESSION.KICK, {
+                roomId,
+                targetUserId,
+            });
+            const updatedSession = response.data?.data?.session;
+            if (updatedSession) {
+                setCurrentSession((prev) => prev ? { ...prev, ...updatedSession } : updatedSession);
+            }
+            return { success: true, session: updatedSession };
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Failed to remove participant';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    }, []);
+
     const clearSession = useCallback(() => {
         setCurrentSession(null);
         setError(null);
@@ -119,6 +139,7 @@ export const SessionProvider = ({ children }) => {
         getSession,
         leaveSession,
         listSessions,
+        kickParticipant,
         clearSession,
         setError
     };
