@@ -1,147 +1,145 @@
-# 🎓 EduSync — Full-Stack Real-Time Virtual Classroom Platform
+# 🎓 EduSync — Real-Time Virtual Classroom Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Live%20in%20Production-success?style=for-the-badge&logo=statuspage&logoColor=white" alt="Status" />
   <img src="https://img.shields.io/badge/Frontend-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="Render" />
   <img src="https://img.shields.io/badge/Database-MongoDB%20Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Atlas" />
-  <img src="https://img.shields.io/badge/Streaming-WebRTC%20%2F%20ZEGOCLOUD-FF6C37?style=for-the-badge&logo=webrtc&logoColor=white" alt="WebRTC" />
+  <img src="https://img.shields.io/badge/Engine-WebRTC%20%2F%20ZEGOCLOUD-FF6C37?style=for-the-badge&logo=webrtc&logoColor=white" alt="WebRTC" />
 </p>
 
 <p align="center">
-  <b>EduSync</b> is an enterprise-grade virtual classroom web application engineered to deliver seamless, low-latency video lectures, screen sharing, and interactive learning directly in browser environments — with zero app installation required.
+  <b>EduSync</b> is a full-stack, browser-based virtual classroom application engineered with low-latency WebRTC streaming, multi-party video/audio, and granular real-time host governance — with zero software installation required.
 </p>
 
 <p align="center">
-  <a href="https://live-class-platform-xi.vercel.app"><strong>Explore Live Demo »</strong></a>
+  <a href="https://live-class-platform-xi.vercel.app"><strong>Live Application Demo »</strong></a>
   &nbsp;•&nbsp;
-  <a href="https://live-class-backend-bdm0.onrender.com"><strong>Backend API Endpoint »</strong></a>
+  <a href="https://live-class-backend-bdm0.onrender.com"><strong>Backend API Health Check »</strong></a>
   &nbsp;•&nbsp;
   <a href="https://github.com/sahoosubhamay888/live-class-platform"><strong>GitHub Repository »</strong></a>
 </p>
 
 ---
 
-## ⚡ Quick Recruiter Summary
+## ⚡ Recruiter Executive Summary
 
-| Metric / Highlight | Implementation Detail |
+| Area | Implementation Highlights |
 | :--- | :--- |
-| **Architecture** | Decoupled Client-Server (SPA on Vercel + REST API on Render + WebRTC Mesh) |
-| **Video Engine** | Sub-second latency HD video/audio streaming via WebRTC & ZEGOCLOUD Prebuilt |
-| **Authentication** | Stateless JWT tokens stored in secure, `SameSite=None` `HTTP-only` cookies |
-| **Cross-Device UX** | Custom mobile hardware acceleration handling & front/rear camera switching |
-| **Production Resilience** | Express 5 routing, automated preflight CORS handling, reverse-proxy trust |
+| **Architecture** | Decoupled Client-Server (React 18 SPA on Vercel + Express 5 REST API on Render) |
+| **Streaming Engine** | Low-latency multi-participant WebRTC audio, video & screen sharing via ZEGOCLOUD |
+| **Host Governance** | Granular in-call moderation: Temporary Remove, Permanent Block, and Room Lock / Unlock |
+| **Security & Auth** | Stateless JWT tokens delivered in `HttpOnly`, `SameSite=None`, `Secure` cookies |
+| **Mobile UX** | Automatic hardware acceleration cleanup, front/back camera toggles, pre-join lobby |
+| **Reliability** | Express 5 routing, automated preflight CORS origin validator, proxy trust configuration |
 
 ---
 
-## 🎯 The Problem & The Solution
+## 🌟 Core Features
 
-* **The Problem:** Many virtual classroom tools either require heavy native desktop client downloads or suffer from poor mobile browser support, broken hardware video layers, and rigid host controls.
-* **The Solution:** EduSync provides an **instant, zero-install WebRTC classroom experience** accessible on any modern phone, tablet, or desktop browser. Hosts can launch a classroom with 1-click shareable links, while attendees enjoy a dedicated pre-join media lobby to test their camera and microphone before entering.
+### 🎥 Real-Time Audio & Video Collaboration
+* **HD Multi-Party Streaming:** Low-latency video grid built on WebRTC media streams with adaptive bitrates.
+* **Screen Sharing & In-Call Chat:** 1-click desktop and window sharing alongside real-time text chat.
+* **Pre-Join Media Lobby:** Interactive device preview allowing attendees to test camera feeds and toggle microphones before connecting to the live room.
+* **Mobile Optimized:** Camera flip switcher (front/rear) and custom viewport handling for mobile devices.
 
----
-
-## 🌟 Key Features
-
-### 🎥 Real-Time Interactive Classroom
-* **HD Multi-Party Video & Audio:** WebRTC-driven multi-participant video conference with adaptive stream bitrate handling.
-* **Integrated Screen Sharing:** Seamless desktop and tab presentation for lectures and live coding demonstrations.
-* **Real-Time In-Call Messaging:** Integrated chat stream allowing attendees to ask questions without interrupting the speaker.
-* **Front / Rear Camera Toggle:** Mobile-optimized device switcher supporting both self-facing and external camera instruction.
-
-### 🛡️ Host Governance & Session Lifecycle
-* **Host vs. Attendee Roles:** Hosts maintain authoritative session control, including the ability to terminate the session for all attendees.
-* **Lobby & Pre-Join Device Preview:** Dedicated pre-join stage where users configure camera/mic states and verify network audio input prior to connecting.
-* **Dynamic Active Roster:** Real-time polling and participant presence synchronization across all connected clients.
-
-### 🔒 Enterprise-Grade Security
-* **Tamper-Proof Authentication:** Passwords hashed using `bcryptjs` with salted rounds.
-* **Cross-Site Cookie Security:** Strict production cookie policies (`Secure`, `HttpOnly`, `SameSite=None`) configured for decoupled origins (Vercel $\leftrightarrow$ Render).
-* **Reverse Proxy Trust:** Configured `trust proxy` headers to ensure accurate client IP identification through Render edge load balancers.
+### 🛡️ Host Governance & Room Moderation
+* **Three-Dot Action Menu:** Located directly on the participant roster for intuitive, host-only moderation:
+  * **Remove (Kick):** Instantly disconnects a disruptive user with a notification. The user may rejoin later if permitted.
+  * **Block Forever:** Evicts the participant from the video room and database roster, permanently barring re-entry via server-side checks.
+* **Top-Positioned Confirmation Dialogs:** Slide-down glassmorphic safety popups (Amber for Kick, Crimson for Block) prevent accidental ejections.
+* **Session Lock / Unlock:** Hosts can lock an active session from the Session Info Card. Locked rooms immediately reject new entries with clear error feedback, while keeping existing participants uninterrupted.
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🏗️ Architecture & Data Flow
 
 ```text
-       ┌───────────────────────────────┐
-       │   Browser Client (Vercel)     │
-       │   React 18 + Tailwind CSS     │
-       └───────┬───────────────▲───────┘
-               │               │
-  REST (HTTPS) │               │ JWT Cookie / JSON
-  Auth & CRUD  │               │
-               ▼               │
-       ┌───────────────────────┴───────┐
-       │     Node.js / Express 5       │
-       │      Backend (Render)         │
-       └───────┬───────────────▲───────┘
-               │               │
-      Mongoose │               │ MongoDB Native Driver
-               ▼               │
-       ┌───────────────────────┴───────┐
-       │   MongoDB Atlas (Cloud DB)    │
-       │   Users & Sessions Collections│
-       └───────────────────────────────┘
+               ┌───────────────────────────────┐
+               │    React 18 SPA (Vercel)      │
+               │  Tailwind CSS + Context API   │
+               └───────┬───────────────▲───────┘
+                       │               │
+          REST (HTTPS) │               │ JWT Cookie / JSON
+                       ▼               │
+               ┌───────────────────────┴───────┐
+               │     Node.js / Express 5       │
+               │       Backend (Render)        │
+               └───────┬───────────────▲───────┘
+                       │               │
+              Mongoose │               │ MongoDB Native Driver
+                       ▼               │
+               ┌───────────────────────┴───────┐
+               │   MongoDB Atlas (Cloud DB)    │
+               │   Users & Sessions Collections│
+               └───────────────────────────────┘
 
-  [ WebRTC Media Streaming & Signaling Channel ]
-  Client A (Teacher) <============== ZEGOCLOUD WebRTC Network ==============> Client B (Students)
+   [ WebRTC Media Streaming & Signaling Channel ]
+   Host Stream <============== ZEGOCLOUD Network ==============> Attendee Streams
 ```
 
 ---
 
-## 💡 Engineering Challenges & Solutions
+## 💡 Key Engineering Challenges & Solutions
 
-Recruiters and hiring managers often ask: *"What was the hardest bug you solved?"* Here are three production challenges engineered during this build:
+### 1. Cross-Origin Cookie Authentication Across Cloud Hosts
+* **Challenge:** Hosting the client on Vercel (`*.vercel.app`) and backend on Render (`*.onrender.com`) caused cross-site browsers to drop authentication cookies.
+* **Solution:** Configured dynamic origin validation supporting preview branches, enabled `credentials: true`, configured `SameSite=None; Secure`, and set `app.set("trust proxy", 1)` to handle Render load-balancer headers.
 
-### 1. Cross-Domain Authentication & Preflight CORS Blockers
-* **Challenge:** When hosting frontend on Vercel (`*.vercel.app`) and backend on Render (`*.onrender.com`), the browser blocked login requests due to preflight `OPTIONS` access control checks and cross-site cookie drops.
-* **Solution:** Engineered a dynamic origin validator supporting Vercel preview environments, enabled `credentials: true`, configured `SameSite=None; Secure`, and set `app.set("trust proxy", 1)` to allow cross-origin cookie authentication.
-
-### 2. Express 5 Wildcard Routing Compatibility
-* **Challenge:** During deployment to Render with Express 5, the server crashed on startup with `PathError [TypeError]: Missing parameter name at index 1: *` due to `path-to-regexp` v8 upgrades.
-* **Solution:** Diagnosed the startup stack trace, removed incompatible legacy wildcard route patterns, and leveraged Express 5's top-level middleware pipeline to cleanly intercept all preflight requests.
+### 2. Multi-Tier Room Moderation State Machine
+* **Challenge:** Distinguishing between temporary kicks, permanent bans, and room-level locks without corrupting active participant counts or causing phantom disconnections.
+* **Solution:** Engineered dedicated array fields (`kickedUsers`, `blockedUsers`, and `isLocked`) in MongoDB. Enforced server-level gating on `/join` so blocked users and locked rooms are rejected with clear status codes before WebRTC stream negotiation begins.
 
 ### 3. Mobile WebRTC Hardware Layer Lifecycle
-* **Challenge:** When a mobile user clicked the built-in leave call button, mobile Chromium hardware acceleration kept the last video frame frozen on screen rather than returning to the lobby.
-* **Solution:** Created an intelligent device-detection layer (`isMobileDevice`) that detects mobile viewports, clears the hardware container DOM (`container.innerHTML = ''`), and triggers a clean re-mount of the pre-join lobby state while keeping the desktop pipeline untouched.
+* **Challenge:** On mobile browsers, disconnecting from a WebRTC room left the camera hardware stream frozen on screen instead of cleanly returning to the lobby.
+* **Solution:** Implemented a targeted device detector (`isMobileDevice`) that explicitly clears the hardware container DOM (`container.innerHTML = ''`) and restores the clean pre-join state.
 
 ---
 
-## 🔌 API Endpoint Documentation
+## 🔌 API Reference
 
+### Authentication Routes (`/api/auth`)
 | Method | Endpoint | Description | Access |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Register new user account & set HTTP-only cookie | Public |
-| `POST` | `/api/auth/login` | Authenticate user & issue signed JWT cookie | Public |
-| `GET` | `/api/auth/me` | Retrieve authenticated user profile | Private (Bearer/Cookie) |
-| `POST` | `/api/auth/logout` | Invalidate session & clear auth cookie | Private |
-| `POST` | `/api/session/create` | Initialize a new live classroom session | Private |
-| `GET` | `/api/session/token` | Generate secure ZEGOCLOUD kit token | Private |
-| `GET` | `/api/session/:roomId` | Fetch session metadata & active participant roster | Private |
-| `POST` | `/api/session/end/:id` | Terminate session for all participants (Host only) | Host |
-| `POST` | `/api/session/leave/:roomId` | Remove attendee from session roster | Private |
+| `POST` | `/register` | Create a new user account & set HTTP-only cookie | Public |
+| `POST` | `/login` | Authenticate credentials & issue signed JWT | Public |
+| `GET` | `/me` | Fetch authenticated user profile | Private |
+| `POST` | `/logout` | Clear authentication cookie | Private |
+
+### Session Management Routes (`/api/session`)
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/create` | Initialize a new live classroom with unique 12-char Room ID | Private |
+| `POST` | `/join` | Join room (enforces active status, block list, and room lock) | Private |
+| `GET` | `/:roomId` | Retrieve session metadata, lock status, and active participants | Private |
+| `GET` | `/list` | Retrieve session history for current user | Private |
+| `POST` | `/leave` | Exit active participant roster | Private |
+| `POST` | `/kick` | Eject participant temporarily with re-entry allowed | Host Only |
+| `POST` | `/block` | Permanently bar participant from room | Host Only |
+| `POST` | `/toggle-lock` | Toggle room entry lock / unlock state | Host Only |
+| `POST` | `/end/:id` | Terminate classroom and disconnect all streams | Host Only |
+| `GET` | `/token` | Generate authenticated ZEGOCLOUD RTC token | Private |
 
 ---
 
-## 💻 Tech Stack Summary
+## 💻 Tech Stack
 
-* **Frontend:** React 18, Vite, React Router DOM, Tailwind CSS, Lucide / React Icons, React Hot Toast
-* **Backend:** Node.js, Express 5, Mongoose ODM, JSON Web Token (`jsonwebtoken`), Cookie-Parser, BcryptJS
+* **Frontend:** React 18, Vite, React Router DOM, Tailwind CSS, React Icons, React Hot Toast
+* **Backend:** Node.js, Express 5, Mongoose ODM, JSON Web Tokens (`jsonwebtoken`), BcryptJS, Cookie-Parser
 * **WebRTC Engine:** `@zegocloud/zego-uikit-prebuilt`
-* **Cloud Infrastructure:** MongoDB Atlas, Vercel (CI/CD Frontend), Render (Cloud Web Service)
+* **Infrastructure:** MongoDB Atlas, Vercel, Render
 
 ---
 
 ## ⚙️ Local Development Setup
 
-### 1. Clone the repository
+### 1. Clone Repository
 ```bash
 git clone https://github.com/sahoosubhamay888/live-class-platform.git
 cd live-class-platform
 ```
 
-### 2. Configure Backend (`server/`)
+### 2. Configure & Start Backend
 ```bash
 cd server
 npm install
@@ -149,18 +147,17 @@ npm install
 Create `server/.env`:
 ```env
 PORT=5000
-MONGODB_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_super_secret_jwt_key
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 CLIENT_URL=http://localhost:5173
 ZEGO_APP_ID=your_zego_app_id
 ZEGO_SERVER_SECRET=your_zego_server_secret
 ```
-Start backend:
 ```bash
 npm run dev
 ```
 
-### 3. Configure Frontend (`client/`)
+### 3. Configure & Start Frontend
 ```bash
 cd ../client
 npm install
@@ -170,23 +167,16 @@ Create `client/.env`:
 VITE_API_URL=http://localhost:5000/api
 VITE_ZEGO_APP_ID=your_zego_app_id
 ```
-Start frontend:
 ```bash
 npm run dev
 ```
-Visit `http://localhost:5173` to test the application locally.
+Open `http://localhost:5173` to test locally.
 
 ---
 
 ## 👨‍💻 Author
 
 **Subhamay Sahoo**  
-* Full-Stack MERN & WebRTC Engineer  
+* Full-Stack MERN & WebRTC Developer  
 * GitHub: [@sahoosubhamay888](https://github.com/sahoosubhamay888)  
-* Project Repo: [live-class-platform](https://github.com/sahoosubhamay888/live-class-platform)  
-
----
-
-<p align="center">
-  <sub>Engineered with passion for high-performance, real-time web applications.</sub>
-</p>
+* Repository: [live-class-platform](https://github.com/sahoosubhamay888/live-class-platform)

@@ -17,8 +17,8 @@ const ParticipantsList = ({
     onKickParticipant,
     onBlockParticipant,
 }) => {
-    // Menu state: id of participant whose 3-dot dropdown is open
-    const [openMenuUserId, setOpenMenuUserId] = useState(null);
+    // Menu state: participant object whose moderation options are currently open
+    const [activeMenuParticipant, setActiveMenuParticipant] = useState(null);
 
     // Modal state: { type: 'kick' | 'block', participant: object } | null
     const [pendingAction, setPendingAction] = useState(null);
@@ -67,11 +67,11 @@ const ParticipantsList = ({
 
     return (
         <div className='bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/[0.1] sticky top-24'>
-            {/* Backdrop to close three-dot menu when clicking anywhere outside */}
-            {openMenuUserId && (
+            {/* Desktop Backdrop to close dropdown when clicking anywhere outside */}
+            {activeMenuParticipant && (
                 <div
-                    className='fixed inset-0 z-20'
-                    onClick={() => setOpenMenuUserId(null)}
+                    className='hidden sm:block fixed inset-0 z-20'
+                    onClick={() => setActiveMenuParticipant(null)}
                 />
             )}
 
@@ -119,7 +119,12 @@ const ParticipantsList = ({
 
                         {otherParticipants.map((p, idx) => {
                             const pId = (p.userId || p._id || `user-${idx}`).toString();
-                            const isMenuOpen = openMenuUserId === pId;
+                            const isMenuOpen =
+                                activeMenuParticipant &&
+                                (activeMenuParticipant.userId || activeMenuParticipant._id)?.toString() === pId;
+
+                            // If near bottom of list on desktop, flip dropdown to open upwards
+                            const openUpwards = idx >= otherParticipants.length - 2;
 
                             return (
                                 <div
@@ -144,7 +149,7 @@ const ParticipantsList = ({
                                         <div className='relative z-30 flex-shrink-0'>
                                             <button
                                                 type='button'
-                                                onClick={() => setOpenMenuUserId(isMenuOpen ? null : pId)}
+                                                onClick={() => setActiveMenuParticipant(isMenuOpen ? null : p)}
                                                 title={`Moderation options for ${p.userName}`}
                                                 className={`p-2 rounded-lg border transition-all cursor-pointer ${
                                                     isMenuOpen
@@ -155,14 +160,18 @@ const ParticipantsList = ({
                                                 <FaEllipsisV className='w-3.5 h-3.5' />
                                             </button>
 
-                                            {/* Dropdown Menu */}
+                                            {/* Desktop Floating Dropdown Menu (Hidden on mobile) */}
                                             {isMenuOpen && (
-                                                <div className='absolute right-0 top-full mt-1.5 w-48 bg-slate-900/95 backdrop-blur-xl border border-white/[0.14] rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6)] p-1.5 z-40 space-y-1 animate-in fade-in zoom-in-95 duration-150'>
+                                                <div
+                                                    className={`hidden sm:block absolute right-0 ${
+                                                        openUpwards ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+                                                    } w-48 bg-slate-900/95 backdrop-blur-xl border border-white/[0.14] rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.6)] p-1.5 z-40 space-y-1 animate-in fade-in zoom-in-95 duration-150`}
+                                                >
                                                     {/* Option 1: Remove */}
                                                     <button
                                                         type='button'
                                                         onClick={() => {
-                                                            setOpenMenuUserId(null);
+                                                            setActiveMenuParticipant(null);
                                                             setPendingAction({ type: 'kick', participant: p });
                                                         }}
                                                         className='w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-white hover:bg-amber-500/15 transition-all flex items-center gap-2.5 cursor-pointer group'
@@ -178,7 +187,7 @@ const ParticipantsList = ({
                                                     <button
                                                         type='button'
                                                         onClick={() => {
-                                                            setOpenMenuUserId(null);
+                                                            setActiveMenuParticipant(null);
                                                             setPendingAction({ type: 'block', participant: p });
                                                         }}
                                                         className='w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 transition-all flex items-center gap-2.5 cursor-pointer group'
@@ -199,6 +208,104 @@ const ParticipantsList = ({
                     </div>
                 )}
             </div>
+
+            {/* Mobile Bottom Action Sheet (Active on phones & small screens) */}
+            {activeMenuParticipant && (
+                <div
+                    className='fixed inset-0 z-50 sm:hidden flex items-end justify-center bg-black/75 backdrop-blur-xs p-0 transition-all duration-200'
+                    onClick={() => setActiveMenuParticipant(null)}
+                >
+                    <div
+                        className='w-full bg-slate-900 border-t border-white/[0.14] rounded-t-3xl p-5 shadow-[0_-20px_50px_rgba(0,0,0,0.85)] animate-in slide-in-from-bottom duration-250 pb-8'
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Drag Handle */}
+                        <div className='w-12 h-1 bg-white/20 rounded-full mx-auto mb-4' />
+
+                        {/* Participant Header */}
+                        <div className='flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]'>
+                            <div className='flex items-center gap-3 min-w-0'>
+                                <div className='w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0'>
+                                    {activeMenuParticipant.userName?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+                                <div className='truncate'>
+                                    <h4 className='font-bold text-white text-sm truncate'>
+                                        {activeMenuParticipant.userName}
+                                    </h4>
+                                    <p className='text-xs text-slate-400'>
+                                        Host Moderation Actions
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type='button'
+                                onClick={() => setActiveMenuParticipant(null)}
+                                className='p-2 text-slate-400 hover:text-white rounded-lg cursor-pointer'
+                            >
+                                <FaTimes className='w-4 h-4' />
+                            </button>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className='space-y-2.5 mb-4'>
+                            {/* Remove Option */}
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    const target = activeMenuParticipant;
+                                    setActiveMenuParticipant(null);
+                                    setPendingAction({ type: 'kick', participant: target });
+                                }}
+                                className='w-full p-3.5 bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/25 border border-amber-500/25 rounded-2xl flex items-center gap-3.5 text-left transition-all cursor-pointer'
+                            >
+                                <div className='w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0'>
+                                    <FaUserMinus className='w-4 h-4' />
+                                </div>
+                                <div>
+                                    <div className='font-bold text-amber-300 text-sm'>
+                                        Remove Participant
+                                    </div>
+                                    <div className='text-xs text-slate-400 mt-0.5'>
+                                        Disconnect from call (attendee can rejoin later)
+                                    </div>
+                                </div>
+                            </button>
+
+                            {/* Block Option */}
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    const target = activeMenuParticipant;
+                                    setActiveMenuParticipant(null);
+                                    setPendingAction({ type: 'block', participant: target });
+                                }}
+                                className='w-full p-3.5 bg-rose-500/10 hover:bg-rose-500/20 active:bg-rose-500/25 border border-rose-500/25 rounded-2xl flex items-center gap-3.5 text-left transition-all cursor-pointer'
+                            >
+                                <div className='w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0'>
+                                    <FaBan className='w-4 h-4' />
+                                </div>
+                                <div>
+                                    <div className='font-bold text-rose-300 text-sm'>
+                                        Block Forever
+                                    </div>
+                                    <div className='text-xs text-rose-300/70 mt-0.5'>
+                                        Disconnect & permanently ban from this session
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* Cancel Button */}
+                        <button
+                            type='button'
+                            onClick={() => setActiveMenuParticipant(null)}
+                            className='w-full py-3 bg-white/[0.06] active:bg-white/[0.12] text-slate-300 font-semibold text-sm rounded-xl transition-colors cursor-pointer'
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Modern Top-Positioned Confirmation Popup (for both Remove & Block) */}
             {pendingAction && (
