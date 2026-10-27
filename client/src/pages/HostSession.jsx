@@ -18,7 +18,8 @@ const HostSession = () => {
     const [loading, setLoading] = useState(true);
     const [copiedRoomId, setCopiedRoomId] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
-    const { currentSession, getSession, leaveSession, clearSession, kickParticipant } = useSession();
+    const [lockLoading, setLockLoading] = useState(false);
+    const { currentSession, getSession, leaveSession, clearSession, kickParticipant, blockParticipant, toggleLockSession } = useSession();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -235,6 +236,55 @@ const HostSession = () => {
         }
     };
 
+
+    const handleBlockParticipant = async (targetUserId, targetUserName) => {
+        try {
+            const res = await blockParticipant(roomId, targetUserId);
+            if (res.success) {
+                toast.success(`${targetUserName} has been permanently blocked from the session`);
+                setSessionInfo((prev) => {
+                    if (!prev) return prev;
+                    const filtered = prev.participants.filter(
+                        (p) => (p.userId || p._id).toString() !== targetUserId.toString()
+                    );
+                    return {
+                        ...prev,
+                        participantCount: filtered.length,
+                        participants: filtered,
+                    };
+                });
+            } else {
+                toast.error(res.error || "Failed to block participant");
+            }
+        } catch (err) {
+            toast.error("Failed to block participant. Please try again.");
+        }
+    };
+
+
+    const handleToggleLock = async () => {
+        if (!roomId || lockLoading) return;
+        setLockLoading(true);
+        try {
+            const nextLock = !sessionInfo?.isLocked;
+            const res = await toggleLockSession(roomId, nextLock);
+            if (res.success) {
+                setSessionInfo((prev) => (prev ? { ...prev, isLocked: res.isLocked } : prev));
+                if (res.isLocked) {
+                    toast.success('Session locked: new participants cannot join');
+                } else {
+                    toast.success('Session unlocked: participants can now join');
+                }
+            } else {
+                toast.error(res.error || 'Failed to toggle room lock');
+            }
+        } catch (err) {
+            toast.error('An error occurred while updating room lock state');
+        } finally {
+            setLockLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#0B1120]">
@@ -290,6 +340,10 @@ const HostSession = () => {
                             copiedLink={copiedLink}
                             onCopyRoomId={handleCopyRoomId}
                             onCopyLink={handleCopyLink}
+                            isHost={true}
+                            isLocked={sessionInfo.isLocked}
+                            onToggleLock={handleToggleLock}
+                            lockLoading={lockLoading}
                         />
 
                         <VideoContainer
@@ -314,6 +368,7 @@ const HostSession = () => {
                             hostName={sessionInfo?.hostName}
                             isHost={true}
                             onKickParticipant={handleKickParticipant}
+                            onBlockParticipant={handleBlockParticipant}
                         />
                     </div>
                 </div>

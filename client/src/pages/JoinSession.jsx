@@ -66,15 +66,16 @@ const JoinSession = () => {
         const result = await joinSession(roomId)
 
         if (result?.success) {
-            setSessionInfo(result.session)
-            setSessionJoined(true);
-
             if (result.session?.isHost) {
-                navigate(`${ROUTES.HOST}?roomId=${roomId}`)
+                navigate(`${ROUTES.HOST}?roomId=${roomId}`);
+                return;
             }
+
+            setSessionInfo(result.session);
+            setSessionJoined(true);
         }
     }
-
+    
     // Join Zego room safely with retry timer cleanup and mount guard
     useEffect(() => {
         if (!sessionJoined || !roomId || zegoJoinedRef.current) {
@@ -143,6 +144,14 @@ const JoinSession = () => {
             if (res?.success && res?.session) {
                 if (res.session.status === 'ended') {
                     toast.error("The host has ended this session.");
+                    handleLeave();
+                    return;
+                }
+                if (res.session.isBlocked) {
+                    toast.error("You have been permanently blocked from this session by the host.", {
+                        duration: 6000,
+                        id: "blocked-out-toast",
+                    });
                     handleLeave();
                     return;
                 }

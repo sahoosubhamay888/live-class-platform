@@ -28,7 +28,6 @@ const sessionSchema = new mongoose.Schema({
         userName: {
             type: String,
             required: true
-
         },
         joinedAt: {
             type: Date,
@@ -43,6 +42,14 @@ const sessionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    blockedUsers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    isLocked: {
+        type: Boolean,
+        default: false
+    },
     startedAt: {
         type: Date,
         default: Date.now

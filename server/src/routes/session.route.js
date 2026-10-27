@@ -1,6 +1,6 @@
 import express from "express"
 import { body, validationResult } from 'express-validator'
-import { getZegoToken, getSession, createSession, leaveSession, endSession, joinSession, listSession, kickParticipant } from "../controllers/session.controller.js";
+import { getZegoToken, getSession, createSession, leaveSession, endSession, joinSession, listSession, kickParticipant, blockParticipant, toggleLockSession } from "../controllers/session.controller.js";
 import { authMiddleWare } from "../middleware/auth.middleware.js";
 
 const sessionRouter = express.Router();
@@ -50,5 +50,11 @@ sessionRouter.post('/leave', validateRoomIdBody, leaveSession);
 
 //POST /api/session/kick
 sessionRouter.post('/kick', kickParticipant);
+
+//POST /api/session/block
+sessionRouter.post('/block', blockParticipant);
+
+//POST /api/session/toggle-lock
+sessionRouter.post('/toggle-lock', toggleLockSession);
 
 export default sessionRouter

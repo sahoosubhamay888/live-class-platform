@@ -1,4 +1,4 @@
-import { FaCheck, FaCopy, FaInfoCircle } from "react-icons/fa";
+import { FaCheck, FaCopy, FaInfoCircle, FaLock, FaLockOpen, FaSpinner } from "react-icons/fa";
 import { APP_CONFIG } from "../../utils/constants";
 
 const SessionInfoCard = ({
@@ -11,6 +11,10 @@ const SessionInfoCard = ({
     copiedLink,
     onCopyRoomId,
     onCopyLink,
+    isHost = false,
+    isLocked = false,
+    onToggleLock,
+    lockLoading = false,
 }) => {
     // Support separate states for both buttons with fallback to legacy `copied`
     const isRoomIdCopied = copiedRoomId !== undefined ? copiedRoomId : (copied === 'roomId' || copied === true);
@@ -119,6 +123,72 @@ const SessionInfoCard = ({
                     </p>
                 </div>
             </div>
+
+            {/* Room Lock & Access Control (Host only) */}
+            {isHost && (
+                <div className="mt-5 pt-5 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div
+                            className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
+                                isLocked
+                                    ? "bg-amber-500/15 border border-amber-500/30 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                                    : "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                            }`}
+                        >
+                            {isLocked ? <FaLock className="w-4 h-4" /> : <FaLockOpen className="w-4 h-4" />}
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-white tracking-tight">
+                                    {isLocked ? "Session is Locked" : "Session is Unlocked"}
+                                </span>
+                                <span
+                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                        isLocked
+                                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                                            : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                                    }`}
+                                >
+                                    {isLocked ? "Locked" : "Open"}
+                                </span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-tight mt-0.5">
+                                {isLocked
+                                    ? "New participants cannot join with Room ID or link"
+                                    : "Anyone with the Room ID or invite link can join"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={onToggleLock}
+                        disabled={lockLoading}
+                        className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 flex-shrink-0 shadow-md ${
+                            isLocked
+                                ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:scale-[1.02] active:scale-[0.98]"
+                                : "bg-gradient-to-r from-amber-500 via-amber-600 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:scale-[1.02] active:scale-[0.98]"
+                        } disabled:opacity-50`}
+                    >
+                        {lockLoading ? (
+                            <>
+                                <FaSpinner className="w-3.5 h-3.5 animate-spin" />
+                                <span>Updating...</span>
+                            </>
+                        ) : isLocked ? (
+                            <>
+                                <FaLockOpen className="w-3.5 h-3.5" />
+                                <span>Unlock Session</span>
+                            </>
+                        ) : (
+                            <>
+                                <FaLock className="w-3.5 h-3.5" />
+                                <span>Lock Session</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

@@ -70,13 +70,18 @@ const HelpCenter = () => {
         },
         {
             category: 'Rooms & Access',
-            question: 'Can hosts remove disruptive participants during a session?',
+            question: 'Can hosts remove or block disruptive participants during a session?',
             answer: 'Yes. Session hosts can view the live participants panel, click the remove button next to any participant\'s name, and confirm via the top safety dialog. The attendee is immediately disconnected from the video room and redirected to their dashboard with a notification.'
         },
         {
             category: 'Rooms & Access',
-            question: 'What happens if I get removed from a session? Can I rejoin?',
-            answer: 'If a host removes you from a meeting, your audio/video stream will end and you will receive a notification before returning to your dashboard. EduSync does not permanently blacklist or lock your account; you may re-enter using the Room ID if the removal was accidental or if the host invites you back.'
+            question: 'What does Lock Session do, and how can hosts unlock it?',
+            answer: 'When a host locks a session, no new participants can enter using the Room ID or join link. Anyone trying to join will see a red error alert stating that the session is locked. Participants who are already inside the meeting are not disconnected. The host can toggle \"Unlock Session\" at any time to resume admitting attendees.'
+        },
+        {
+            category: 'Rooms & Access',
+            question: 'What happens if I get removed or blocked from a session?',
+            answer: 'If a host removes you from a meeting, your audio/video stream will end and you will receive a notification before returning to your dashboard. If you were removed, you can re-enter using the Room ID if the host permits. However, if you were blocked, you are permanently barred by the server from rejoining that session.'
         },
         {
             category: 'Audio & Video Issues',

@@ -16,6 +16,8 @@ export const API_ENDPOINTS = {
     END: '/session/end',
     LEAVE: '/session/leave',
     KICK: '/session/kick',
+    BLOCK: '/session/block',
+    TOGGLE_LOCK: '/session/toggle-lock',
     GET: '/session', // Base path, append roomId
     LIST: '/session/list',
   },

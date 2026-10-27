@@ -125,6 +125,50 @@ export const SessionProvider = ({ children }) => {
         }
     }, []);
 
+
+    // Block participant permanently (Host only)
+    const blockParticipant = useCallback(async (roomId, targetUserId) => {
+        try {
+            setError(null);
+            const response = await api.post(API_ENDPOINTS.SESSION.BLOCK, {
+                roomId,
+                targetUserId,
+            });
+            const updatedSession = response.data?.data?.session;
+            if (updatedSession) {
+                setCurrentSession((prev) => prev ? { ...prev, ...updatedSession } : updatedSession);
+            }
+            return { success: true, session: updatedSession };
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Failed to block participant';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    }, []);
+
+
+    // Toggle Lock session (Host only)
+    const toggleLockSession = useCallback(async (roomId, lock) => {
+        try {
+            setError(null);
+            const response = await api.post(API_ENDPOINTS.SESSION.TOGGLE_LOCK, {
+                roomId,
+                lock,
+            });
+            const isLocked = response.data?.data?.isLocked;
+            setCurrentSession((prev) => (prev ? { ...prev, isLocked } : prev));
+            return {
+                success: true,
+                isLocked,
+                message: response.data?.message,
+            };
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Failed to update session lock state';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        }
+    }, []);
+
     const clearSession = useCallback(() => {
         setCurrentSession(null);
         setError(null);
@@ -140,6 +184,8 @@ export const SessionProvider = ({ children }) => {
         leaveSession,
         listSessions,
         kickParticipant,
+        blockParticipant,
+        toggleLockSession,
         clearSession,
         setError
     };
