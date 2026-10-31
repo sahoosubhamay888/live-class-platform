@@ -6,10 +6,6 @@
 **/.env.*
 !**/.env.example
 
-# Production Builds
-**/dist/
-**/dist-ssr/
-
 # Logs
 **/logs/
 **/*.log
